@@ -1,21 +1,18 @@
 import { TuringTestCore } from "./detector-core.js";
 
-const template = document.createElement("template");
-template.innerHTML = `
+const overlayTemplate = document.createElement("template");
+overlayTemplate.innerHTML = `
   <style>
     :host {
       --human-color: rgba(23, 184, 106, 0.95);
       --robot-color: rgba(255, 48, 48, 0.98);
-      --panel-bg: rgba(247, 245, 239, 0.9);
-      --toast-bg: rgba(247, 245, 239, 0.78);
-      --text-color: #171717;
+      --toast-bg: rgba(228, 235, 240, 0.82);
       --detection-color: var(--human-color);
       position: fixed;
       inset: 0;
       display: block;
       pointer-events: none;
       z-index: 50;
-      color: var(--text-color);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
@@ -44,7 +41,7 @@ template.innerHTML = `
       position: absolute;
       padding: 2px 2px 2px 6px;
       background: var(--detection-color);
-      color: #fff;
+      color: #f7fbfd;
       font: 600 12px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       letter-spacing: 0.06em;
       white-space: nowrap;
@@ -71,96 +68,6 @@ template.innerHTML = `
     .corner-bottom-left { bottom: -2px; left: -2px; border-width: 0 0 2px 2px; }
     .corner-bottom-right { right: -2px; bottom: -2px; border-width: 0 2px 2px 0; }
 
-    .panel {
-      border: 1px solid rgba(0, 0, 0, 0.12);
-      background: var(--panel-bg);
-      backdrop-filter: blur(6px);
-      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
-      pointer-events: auto;
-    }
-
-    .debug-panel {
-      position: fixed;
-      left: 16px;
-      bottom: 16px;
-      min-width: 160px;
-      padding: 10px 12px;
-      font: 500 12px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      letter-spacing: 0.02em;
-      display: none;
-    }
-
-    :host([debug]) .debug-panel {
-      display: block;
-    }
-
-    .debug-title {
-      margin-bottom: 8px;
-      color: var(--detection-color);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-    }
-
-    .debug-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .debug-list {
-      margin: 4px 0 8px;
-      padding-left: 12px;
-      color: rgba(0, 0, 0, 0.62);
-      font-size: 11px;
-    }
-
-    .debug-list div { margin: 2px 0; }
-
-    .debug-divider {
-      height: 1px;
-      margin: 6px 0 8px;
-      background: rgba(0, 0, 0, 0.12);
-    }
-
-    .debug-total {
-      margin-top: 6px;
-      padding-top: 6px;
-      border-top: 1px solid rgba(0, 0, 0, 0.08);
-    }
-
-    .debug-control {
-      display: grid;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .debug-control button {
-      appearance: none;
-      border: 1px solid rgba(0, 0, 0, 0.18);
-      background: rgba(255, 255, 255, 0.85);
-      color: var(--text-color);
-      padding: 6px 8px;
-      font: inherit;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .debug-control button.is-active {
-      border-color: var(--detection-color);
-      color: var(--detection-color);
-    }
-
-    .debug-slider {
-      display: grid;
-      gap: 6px;
-      font-size: 11px;
-      color: rgba(0, 0, 0, 0.72);
-    }
-
-    .debug-slider input[type="range"] {
-      width: 100%;
-    }
-
     .achievement-toasts {
       position: fixed;
       right: 16px;
@@ -174,11 +81,13 @@ template.innerHTML = `
     .achievement-toast {
       width: 100%;
       padding: 10px 12px;
-      border: 1px solid rgba(0, 0, 0, 0.24);
+      border: 1px solid rgba(90, 113, 128, 0.24);
       background: var(--toast-bg);
+      backdrop-filter: blur(10px);
       display: flex;
       align-items: center;
       gap: 10px;
+      color: #182128;
       font: 600 12px/1.3 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -194,10 +103,9 @@ template.innerHTML = `
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(255, 255, 255, 0.92);
-      border: 3px double var(--detection-color);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.58);
-      color: #111;
+      background: rgba(247, 251, 253, 0.95);
+      border: 2px solid var(--detection-color);
+      color: #182128;
       font: 700 22px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
 
@@ -220,7 +128,6 @@ template.innerHTML = `
     @keyframes toast-out { from { transform: translateX(0); } to { transform: translateX(100%); } }
 
     @media (max-width: 720px) {
-      .debug-panel { left: 16px; right: 16px; bottom: 16px; min-width: 0; }
       .achievement-toasts { left: 16px; right: 16px; width: auto; }
     }
   </style>
@@ -233,54 +140,126 @@ template.innerHTML = `
     <span class="corner corner-bottom-right"></span>
   </div>
 
-  <aside class="panel debug-panel" part="debug-panel" aria-label="Detection debug">
-    <div class="debug-title">debug</div>
-    <div class="debug-row"><span>base</span><span data-debug-base>0</span></div>
-    <div class="debug-list" data-debug-base-details>baseline</div>
-    <div class="debug-row"><span>motion</span><span data-debug-motion>0</span></div>
-    <div class="debug-row"><span>typing</span><span data-debug-typing>0</span></div>
-    <div class="debug-row"><span>scroll</span><span data-debug-scroll>0</span></div>
-    <div class="debug-row"><span>click</span><span data-debug-click>0</span></div>
-    <div class="debug-divider"></div>
-    <div class="debug-control">
-      <button type="button" data-debug-toggle>override off</button>
-      <label class="debug-slider">
-        <span>confidence</span>
-        <input type="range" min="1" max="99" value="50" data-debug-range />
-        <span data-debug-value>50%</span>
-      </label>
-    </div>
-    <div class="debug-row debug-total"><span>final</span><span data-debug-final>0</span></div>
-  </aside>
-
   <div class="achievement-toasts" part="toasts" aria-live="polite" aria-atomic="true"></div>
+`;
+
+const debugTemplate = document.createElement("template");
+debugTemplate.innerHTML = `
+  <style>
+    :host {
+      --panel-bg: rgba(223, 230, 236, 0.72);
+      --panel-border: rgba(104, 126, 142, 0.28);
+      --panel-text: #19242d;
+      --panel-muted: rgba(25, 36, 45, 0.62);
+      --panel-accent: rgba(23, 184, 106, 0.95);
+      position: fixed;
+      left: 18px;
+      bottom: 18px;
+      display: block;
+      width: min(240px, calc(100vw - 36px));
+      color: var(--panel-text);
+      font: 500 12px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: 0.02em;
+      z-index: 40;
+    }
+
+    :host([state="robot"]) {
+      --panel-accent: rgba(255, 48, 48, 0.98);
+    }
+
+    .panel {
+      border: 1px solid var(--panel-border);
+      background: var(--panel-bg);
+      backdrop-filter: blur(12px);
+      padding: 12px 14px;
+    }
+
+    .title {
+      margin-bottom: 8px;
+      color: var(--panel-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .list {
+      margin: 4px 0 8px;
+      padding-left: 12px;
+      color: var(--panel-muted);
+      font-size: 11px;
+    }
+
+    .list div { margin: 2px 0; }
+
+    .divider {
+      height: 1px;
+      margin: 8px 0;
+      background: rgba(104, 126, 142, 0.2);
+    }
+
+    .status {
+      margin-bottom: 8px;
+      color: var(--panel-muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+  </style>
+
+  <aside class="panel" aria-label="Turing Test debug stats">
+    <div class="title">debug</div>
+    <div class="status" data-status>waiting for source</div>
+    <div class="row"><span>base</span><span data-base>0</span></div>
+    <div class="list" data-details>baseline</div>
+    <div class="row"><span>motion</span><span data-motion>0</span></div>
+    <div class="row"><span>typing</span><span data-typing>0</span></div>
+    <div class="row"><span>scroll</span><span data-scroll>0</span></div>
+    <div class="row"><span>click</span><span data-click>0</span></div>
+    <div class="divider"></div>
+    <div class="row"><span>human</span><span data-human>0</span></div>
+    <div class="row"><span>robot</span><span data-robot>0</span></div>
+    <div class="row"><span>state</span><span data-state>human</span></div>
+  </aside>
 `;
 
 const formatSigned = (value) => `${value > 0 ? "+" : ""}${value}`;
 
+const toPublicSnapshot = (snapshot) => ({
+  visible: snapshot.visible,
+  state: snapshot.isRobot ? "robot" : "human",
+  colorState: snapshot.isRobot ? "robot" : "human",
+  confidence: snapshot.confidence,
+  humanConfidence: snapshot.confidence,
+  robotConfidence: 100 - snapshot.confidence,
+  label: snapshot.label,
+  baseConfidence: snapshot.baseConfidence,
+  totalAdjustment: snapshot.totalAdjustment,
+  scores: { ...snapshot.scores },
+  baseBreakdown: {
+    score: snapshot.baseBreakdown.score,
+    details: [...snapshot.baseBreakdown.details],
+  },
+});
+
 export class TuringTestElement extends HTMLElement {
   static get observedAttributes() {
-    return ["debug", "achievements"];
+    return ["achievements", "human-color", "robot-color"];
   }
 
   constructor() {
     super();
     this.core = new TuringTestCore();
+    this.snapshot = null;
     this.attachShadow({ mode: "open" });
-    this.shadowRoot.appendChild(template.content.cloneNode(true));
+    this.shadowRoot.appendChild(overlayTemplate.content.cloneNode(true));
 
     this.box = this.shadowRoot.querySelector(".detection-box");
     this.label = this.shadowRoot.querySelector(".detection-label");
-    this.debugBase = this.shadowRoot.querySelector("[data-debug-base]");
-    this.debugBaseDetails = this.shadowRoot.querySelector("[data-debug-base-details]");
-    this.debugMotion = this.shadowRoot.querySelector("[data-debug-motion]");
-    this.debugTyping = this.shadowRoot.querySelector("[data-debug-typing]");
-    this.debugScroll = this.shadowRoot.querySelector("[data-debug-scroll]");
-    this.debugClick = this.shadowRoot.querySelector("[data-debug-click]");
-    this.debugFinal = this.shadowRoot.querySelector("[data-debug-final]");
-    this.debugToggle = this.shadowRoot.querySelector("[data-debug-toggle]");
-    this.debugRange = this.shadowRoot.querySelector("[data-debug-range]");
-    this.debugValue = this.shadowRoot.querySelector("[data-debug-value]");
     this.achievementToasts = this.shadowRoot.querySelector(".achievement-toasts");
 
     this.onPointer = (event) => this.render(this.core.trackPointer(event.clientX, event.clientY));
@@ -302,10 +281,7 @@ export class TuringTestElement extends HTMLElement {
     document.documentElement.addEventListener("mouseleave", this.onLeave);
     window.addEventListener("blur", this.onLeave);
     window.addEventListener("resize", this.onResize);
-    this.debugToggle.addEventListener("click", this.onToggleDebugOverride);
-    this.debugRange.addEventListener("input", this.onDebugRangeInput);
-
-    this.core.setDebugOverrideValue(Number(this.debugRange.value));
+    this.applyConfiguredColors();
     this.render(this.core.resize(window.innerWidth, window.innerHeight));
   }
 
@@ -319,53 +295,62 @@ export class TuringTestElement extends HTMLElement {
     document.documentElement.removeEventListener("mouseleave", this.onLeave);
     window.removeEventListener("blur", this.onLeave);
     window.removeEventListener("resize", this.onResize);
-    this.debugToggle.removeEventListener("click", this.onToggleDebugOverride);
-    this.debugRange.removeEventListener("input", this.onDebugRangeInput);
   }
 
   attributeChangedCallback() {
-    this.render(this.core.getSnapshot());
+    this.applyConfiguredColors();
+    if (this.isConnected) {
+      this.render(this.core.getSnapshot());
+    }
   }
 
-  onToggleDebugOverride = () => {
-    this.render(this.core.setDebugOverrideEnabled(!this.core.debugOverride.enabled));
-  };
+  applyConfiguredColors() {
+    const humanColor = this.getAttribute("human-color");
+    const robotColor = this.getAttribute("robot-color");
+    if (humanColor) this.style.setProperty("--human-color", humanColor);
+    if (robotColor) this.style.setProperty("--robot-color", robotColor);
+  }
 
-  onDebugRangeInput = (event) => {
-    this.render(this.core.setDebugOverrideValue(Number(event.target.value)));
-  };
+  get state() {
+    return this.snapshot?.state ?? "human";
+  }
 
-  render(snapshot) {
-    this.toggleAttribute("robot", snapshot.isRobot);
-    this.box.style.width = `${snapshot.box.width}px`;
-    this.box.style.height = `${snapshot.box.height}px`;
-    this.box.style.transform = `translate(${snapshot.box.x}px, ${snapshot.box.y}px) translate(-50%, -50%)`;
-    this.box.classList.toggle("is-visible", snapshot.visible);
-    this.box.classList.toggle("is-left-edge", snapshot.box.isLeftEdge && snapshot.box.width < this.label.scrollWidth + 12);
-    this.label.textContent = snapshot.label;
+  get colorState() {
+    return this.snapshot?.colorState ?? "human";
+  }
 
-    this.debugBase.textContent = `${snapshot.baseConfidence}%`;
-    this.debugBaseDetails.innerHTML = snapshot.baseBreakdown.details.length
-      ? snapshot.baseBreakdown.details.map((detail) => `<div>${detail}</div>`).join("")
-      : "<div>baseline</div>";
-    this.debugMotion.textContent = formatSigned(snapshot.scores.motion);
-    this.debugTyping.textContent = formatSigned(snapshot.scores.typing);
-    this.debugScroll.textContent = formatSigned(snapshot.scores.scroll);
-    this.debugClick.textContent = formatSigned(snapshot.scores.click);
-    this.debugFinal.textContent = snapshot.debugOverride.enabled ? `${snapshot.confidence}% override` : `${snapshot.confidence}% human`;
-    this.debugToggle.textContent = snapshot.debugOverride.enabled ? "override on" : "override off";
-    this.debugToggle.classList.toggle("is-active", snapshot.debugOverride.enabled);
-    this.debugValue.textContent = `${snapshot.debugOverride.value}%`;
-    this.debugRange.value = String(snapshot.debugOverride.value);
+  get humanConfidence() {
+    return this.snapshot?.humanConfidence ?? this.core.getSnapshot().confidence;
+  }
+
+  get robotConfidence() {
+    return this.snapshot?.robotConfidence ?? 100 - this.humanConfidence;
+  }
+
+  render(coreSnapshot) {
+    this.toggleAttribute("robot", coreSnapshot.isRobot);
+    this.box.style.width = `${coreSnapshot.box.width}px`;
+    this.box.style.height = `${coreSnapshot.box.height}px`;
+    this.box.style.transform = `translate(${coreSnapshot.box.x}px, ${coreSnapshot.box.y}px) translate(-50%, -50%)`;
+    this.box.classList.toggle("is-visible", coreSnapshot.visible);
+    this.box.classList.toggle("is-left-edge", coreSnapshot.box.isLeftEdge && coreSnapshot.box.width < this.label.scrollWidth + 12);
+    this.label.textContent = coreSnapshot.label;
 
     if (this.hasAttribute("achievements")) {
-      snapshot.unlockedAchievements.forEach((achievement) => this.showAchievement(achievement));
+      coreSnapshot.unlockedAchievements.forEach((achievement) => this.showAchievement(achievement));
     }
+
+    this.snapshot = toPublicSnapshot(coreSnapshot);
+    this.dispatchEvent(new CustomEvent("turing-test:update", {
+      detail: this.snapshot,
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   showAchievement(message) {
     const toast = document.createElement("div");
-    toast.className = "achievement-toast panel";
+    toast.className = "achievement-toast";
     toast.innerHTML = `<div class="achievement-toast-icon" aria-hidden="true">${message.icon}</div><div class="achievement-toast-body"><div class="achievement-toast-title">${message.title}</div><div class="achievement-toast-subtitle">${message.subtitle}</div></div>`;
     this.achievementToasts.appendChild(toast);
 
@@ -392,7 +377,6 @@ export class TuringTestElement extends HTMLElement {
               const last = node.getBoundingClientRect();
               const dx = first.left - last.left;
               const dy = first.top - last.top;
-
               if (!dx && !dy) return;
 
               node.style.transition = "none";
@@ -411,7 +395,97 @@ export class TuringTestElement extends HTMLElement {
   }
 }
 
+export class TuringTestDebugElement extends HTMLElement {
+  static get observedAttributes() {
+    return ["for"];
+  }
+
+  constructor() {
+    super();
+    this.target = null;
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.appendChild(debugTemplate.content.cloneNode(true));
+
+    this.status = this.shadowRoot.querySelector("[data-status]");
+    this.base = this.shadowRoot.querySelector("[data-base]");
+    this.details = this.shadowRoot.querySelector("[data-details]");
+    this.motion = this.shadowRoot.querySelector("[data-motion]");
+    this.typing = this.shadowRoot.querySelector("[data-typing]");
+    this.scroll = this.shadowRoot.querySelector("[data-scroll]");
+    this.click = this.shadowRoot.querySelector("[data-click]");
+    this.human = this.shadowRoot.querySelector("[data-human]");
+    this.robot = this.shadowRoot.querySelector("[data-robot]");
+    this.stateValue = this.shadowRoot.querySelector("[data-state]");
+
+    this.handleUpdate = (event) => {
+      this.render(event.detail);
+    };
+  }
+
+  connectedCallback() {
+    this.bindTarget();
+  }
+
+  disconnectedCallback() {
+    this.unbindTarget();
+  }
+
+  attributeChangedCallback() {
+    if (this.isConnected) {
+      this.bindTarget();
+    }
+  }
+
+  bindTarget() {
+    this.unbindTarget();
+    const targetId = this.getAttribute("for");
+    this.target = targetId ? document.getElementById(targetId) : document.querySelector("turing-test");
+
+    if (!this.target) {
+      this.render(null);
+      return;
+    }
+
+    this.target.addEventListener("turing-test:update", this.handleUpdate);
+    this.render(this.target.snapshot ?? null);
+  }
+
+  unbindTarget() {
+    if (this.target) {
+      this.target.removeEventListener("turing-test:update", this.handleUpdate);
+      this.target = null;
+    }
+  }
+
+  render(snapshot) {
+    if (!snapshot) {
+      this.setAttribute("state", "human");
+      this.status.textContent = "waiting for source";
+      return;
+    }
+
+    this.setAttribute("state", snapshot.state);
+    this.status.textContent = snapshot.visible ? snapshot.label : "idle";
+    this.base.textContent = `${snapshot.baseConfidence}%`;
+    this.details.innerHTML = snapshot.baseBreakdown.details.length
+      ? snapshot.baseBreakdown.details.map((detail) => `<div>${detail}</div>`).join("")
+      : "<div>baseline</div>";
+    this.motion.textContent = formatSigned(snapshot.scores.motion);
+    this.typing.textContent = formatSigned(snapshot.scores.typing);
+    this.scroll.textContent = formatSigned(snapshot.scores.scroll);
+    this.click.textContent = formatSigned(snapshot.scores.click);
+    this.human.textContent = `${snapshot.humanConfidence}%`;
+    this.robot.textContent = `${snapshot.robotConfidence}%`;
+    this.stateValue.textContent = snapshot.state;
+  }
+}
+
 if (!customElements.get("turing-test")) {
   customElements.define("turing-test", TuringTestElement);
-  window.dispatchEvent(new CustomEvent("turing-test:ready"));
 }
+
+if (!customElements.get("turing-test-debug")) {
+  customElements.define("turing-test-debug", TuringTestDebugElement);
+}
+
+window.dispatchEvent(new CustomEvent("turing-test:ready"));

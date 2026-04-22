@@ -7,24 +7,43 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="page">
-      <section class="hero panel" aria-label="About the detector demo">
-        <p class="eyebrow">Turing Test Demo</p>
+    <main class="page" aria-label="Turing Test demo">
+      <div class="copy">
+        <p class="eyebrow">&lt;turing-test&gt; Demo</p>
         <h1>Move, type, scroll, click.</h1>
         <p class="lede">
-          This page is only a demo shell. The overlay itself is the reusable component. Debug controls
-          and achievement toasts are optional attributes.
+          This page mounts the reusable <code>&lt;turing-test&gt;</code> overlay and listens to its live state.
+          The accent color below follows the overlay color state and the human confidence updates in real time.
         </p>
-        <div class="snippet">
-          <code>&lt;script type="module" src="./turing-test.js"&gt;&lt;/script&gt;</code>
-          <code>&lt;turing-test&gt;&lt;/turing-test&gt;</code>
-          <code>&lt;turing-test debug achievements&gt;&lt;/turing-test&gt;</code>
-        </div>
-      </section>
+        <p class="metric">State: <span id="stateValue" class="state-accent">human</span></p>
+        <p class="metric">Human confidence: <span id="confidenceValue" class="state-accent">--%</span></p>
+        <p class="hint">Open the page and move your cursor to trigger the overlay.</p>
+      </div>
     </main>
 
-    <turing-test debug achievements></turing-test>
+    <turing-test id="demoOverlay"></turing-test>
+    <turing-test-debug for="demoOverlay"></turing-test-debug>
 
-    <script type="module" src="turing-test.js"></script>
+    <script src="dist/turing-test.js"></script>
+    <script>
+      const overlay = document.getElementById("demoOverlay");
+      const stateValue = document.getElementById("stateValue");
+      const confidenceValue = document.getElementById("confidenceValue");
+
+      const applySnapshot = (snapshot) => {
+        if (!snapshot) return;
+        document.body.dataset.colorState = snapshot.colorState;
+        stateValue.textContent = snapshot.state;
+        confidenceValue.textContent = `${snapshot.humanConfidence}%`;
+      };
+
+      overlay.addEventListener("turing-test:update", (event) => {
+        applySnapshot(event.detail);
+      });
+
+      if (overlay.snapshot) {
+        applySnapshot(overlay.snapshot);
+      }
+    </script>
   </body>
 </html>

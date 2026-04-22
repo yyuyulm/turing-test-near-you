@@ -24,7 +24,7 @@ const buildStandaloneBundle = async () => {
   const bundledCore = coreSource.replace("export class TuringTestCore", "class TuringTestCore");
   const bundledElement = elementSource
     .replace(/^import\s+\{\s*TuringTestCore\s*\}\s+from\s+"\.\/detector-core\.js";\n\n/, "")
-    .replace(/^export class TuringTestElement/m, "class TuringTestElement");
+    .replace(/^export class /gm, "class ");
 
   return `${bundledCore}\n\n${bundledElement}`;
 };
