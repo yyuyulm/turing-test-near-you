@@ -1,14 +1,10 @@
-# turing-test
+# <turing-test> near you
 
-Reusable Turing test overlay for websites and browser extensions.
+Reusable Turing test mini-game overlay for websites and as browser extensions.
 
-`<turing-test>` is a custom element that tracks pointer movement, typing, scrolling, and clicking to estimate whether interaction looks human or automated.
+`<turing-test>` is a custom element that tracks pointer movement, typing, scrolling, and clicking to estimate whether interaction looks human or automated, come find out who are the bots around us...or within us?
 
-Default palette comes from the original site implementation:
-
-- human: `rgba(23, 184, 106, 0.95)`
-- robot: `rgba(255, 48, 48, 0.98)`
-- base background reference: `#f7f5ef`
+The current implemtnation is rather barebone. Open to contributions! Whether that is more complex detection logic, input source, achievements, UI, or anything that you think fit :)
 
 ## Install
 
@@ -24,6 +20,11 @@ If the unscoped package name is unavailable on npm, publish it under your scope 
 <script type="module" src="./turing-test.js"></script>
 <turing-test></turing-test>
 ```
+
+Default palette comes from the original site implementation:
+
+- human: `rgba(23, 184, 106, 0.95)`
+- robot: `rgba(255, 48, 48, 0.98)`
 
 Override state colors with attributes:
 

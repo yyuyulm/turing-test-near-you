@@ -1,5 +1,5 @@
 {
-  "name": "turing-test",
+  "name": "turing-test-near-you",
   "version": "0.1.0",
   "description": "A reusable Turing test overlay custom element for websites and browser extensions.",
   "type": "module",
@@ -29,5 +29,8 @@
     "overlay",
     "browser-extension"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
 }
