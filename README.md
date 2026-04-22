@@ -8,7 +8,8 @@ The current implemtnation is rather barebone. Open to contributions! Whether tha
 
 ## Install
 
-No install needed if you are just using it with remote js script from npm, but if you really want to install then you can always
+No install needed if you are just using it with remote js script from npm, 
+but if you really want to then you can always:
 
 ```bash
 npm i turing-test-near-you
