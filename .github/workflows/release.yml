@@ -23,8 +23,8 @@ jobs:
 
       - run: npm ci
       - run: npm run build
-
-      - run: npm publish   # ✅ no token needed
+      - run: npm whoami
+      - run: npm publish
 
       - run: |
           mkdir -p release-assets
