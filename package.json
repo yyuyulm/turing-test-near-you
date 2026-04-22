@@ -1,0 +1,33 @@
+{
+  "name": "turing-test",
+  "version": "0.1.0",
+  "description": "A reusable Turing test overlay custom element for websites and browser extensions.",
+  "type": "module",
+  "main": "./dist/turing-test.js",
+  "module": "./dist/package/turing-test.module.js",
+  "browser": "./dist/turing-test.js",
+  "exports": {
+    ".": {
+      "import": "./dist/package/turing-test.module.js",
+      "default": "./dist/turing-test.js"
+    },
+    "./core": "./dist/package/detector-core.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "node ./scripts/build.mjs",
+    "build:package": "node ./scripts/build.mjs package",
+    "build:extension": "node ./scripts/build.mjs extension",
+    "prepack": "npm run build"
+  },
+  "keywords": [
+    "turing-test",
+    "web-component",
+    "custom-element",
+    "overlay",
+    "browser-extension"
+  ],
+  "license": "MIT"
+}

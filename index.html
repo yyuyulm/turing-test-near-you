@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Turing Test Demo</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero panel" aria-label="About the detector demo">
+        <p class="eyebrow">Turing Test Demo</p>
+        <h1>Move, type, scroll, click.</h1>
+        <p class="lede">
+          This page is only a demo shell. The overlay itself is the reusable component. Debug controls
+          and achievement toasts are optional attributes.
+        </p>
+        <div class="snippet">
+          <code>&lt;script type="module" src="./turing-test.js"&gt;&lt;/script&gt;</code>
+          <code>&lt;turing-test&gt;&lt;/turing-test&gt;</code>
+          <code>&lt;turing-test debug achievements&gt;&lt;/turing-test&gt;</code>
+        </div>
+      </section>
+    </main>
+
+    <turing-test debug achievements></turing-test>
+
+    <script type="module" src="turing-test.js"></script>
+  </body>
+</html>
