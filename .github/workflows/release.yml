@@ -18,7 +18,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: npm publish --provenance --access public
+      - run: npm publish --provenance
       - run: |
           mkdir -p release-assets
           zip -r "release-assets/turing-test-chrome.zip" dist/extension/chrome
