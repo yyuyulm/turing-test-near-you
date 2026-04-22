@@ -8,11 +8,11 @@ The current implemtnation is rather barebone. Open to contributions! Whether tha
 
 ## Install
 
-```bash
-npm install turing-test
-```
+No install needed if you are just using it with remote js script from npm, but if you really want to install then you can always
 
-If the unscoped package name is unavailable on npm, publish it under your scope instead, for example `@yourname/turing-test`.
+```bash
+npm i turing-test-near-you
+```
 
 ## Use In A Site
 
