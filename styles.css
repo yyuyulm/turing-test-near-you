@@ -75,8 +75,11 @@ body[data-color-state="robot"] {
   padding: 0;
   border: 0;
   background: none;
+  appearance: none;
+  -webkit-appearance: none;
   color: inherit;
   font: 600 0.95em/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  line-height: inherit;
   white-space: normal;
   cursor: pointer;
   color: var(--state-color);
