@@ -13,15 +13,14 @@
         <h1>Move, type, scroll, click.</h1>
         <p class="lede">
           This page mounts the reusable <code>&lt;turing-test&gt;</code> overlay and listens to its live state.
-          The accent color below follows the overlay color state and the human confidence updates in real time.
         </p>
         <p class="metric">State: <span id="stateValue" class="state-accent">human</span></p>
         <p class="metric">Human confidence: <span id="confidenceValue" class="state-accent">--%</span></p>
-        <p class="hint">Open the page and move your cursor to trigger the overlay.</p>
+        <p class="hint">Move, type, scroll, or click. Can you prove to the bot you are one of them?.</p>
       </div>
     </main>
 
-    <turing-test id="demoOverlay"></turing-test>
+    <turing-test id="demoOverlay" achievements></turing-test>
     <turing-test-debug for="demoOverlay"></turing-test-debug>
 
     <script src="dist/turing-test.js"></script>

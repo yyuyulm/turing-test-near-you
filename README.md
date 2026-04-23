@@ -105,7 +105,7 @@ This repo includes a demo page in `index.html`.
 
 ```html
 <script src="dist/turing-test.js"></script>
-<turing-test id="demoOverlay"></turing-test>
+<turing-test id="demoOverlay" achievements></turing-test>
 <turing-test-debug for="demoOverlay"></turing-test-debug>
 ```
 
