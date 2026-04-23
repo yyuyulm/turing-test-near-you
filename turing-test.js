@@ -223,7 +223,7 @@ debugTemplate.innerHTML = `
     <div class="divider"></div>
     <div class="row"><span>human</span><span data-human>0</span></div>
     <div class="row"><span>robot</span><span data-robot>0</span></div>
-    <div class="row"><span>state</span><span data-state>human</span></div>
+    <div class="row"><span>class</span><span data-state>human</span></div>
   </aside>
 `;
 
