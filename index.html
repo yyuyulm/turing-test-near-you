@@ -11,12 +11,13 @@
       <div class="copy">
         <p class="eyebrow">&lt;turing-test&gt; Demo</p>
         <h1>Move, type, scroll, click.</h1>
-        <p class="lede">
-          This page mounts the one-liner <code>&lt;turing-test&gt;</code> component and listens to its live state.
-          Want to add it to your website? Simply add
-          <code>&lt;script type="module" src="https://cdn.jsdelivr.net/npm/turing-test-near-you@latest/dist/turing-test.js"&gt;&lt;/script&gt;&lt;turing-test achievements&gt;&lt;/turing-test&gt;</code>
-          or see the <a href="https://github.com/yyuyulm/turing-test-near-you" target="_blank" rel="noreferrer">source code</a>.
-        </p>
+        <div class="lede">
+          This page contains the one-liner <code>&lt;turing-test&gt;</code> component and displays its live state.<br><br>
+          Want to add it to your website?<br>
+          Simply <button id="copySnippet" class="copy-snippet" type="button" aria-label="Copy install snippet">copy</button> and paste, or use the <a href="https://github.com/yyuyulm/turing-test-near-you" target="_blank" rel="noreferrer">source code</a>.<br><br>
+          Want to keep you bot-ness curbed at all times?<br>
+          Install the test as a browser plugin [coming soon].
+        </div>
         <p class="metric">State: <span id="stateValue" class="state-accent">human</span></p>
         <p class="metric">Human confidence: <span id="confidenceValue" class="state-accent">--%</span></p>
         <p class="hint">Move, type, scroll, or click. Robot-like behavior can unlock achievements.</p>
@@ -31,6 +32,8 @@
       const overlay = document.getElementById("demoOverlay");
       const stateValue = document.getElementById("stateValue");
       const confidenceValue = document.getElementById("confidenceValue");
+      const copySnippet = document.getElementById("copySnippet");
+      let copyResetTimer = null;
 
       const applySnapshot = (snapshot) => {
         if (!snapshot) return;
@@ -39,9 +42,51 @@
         confidenceValue.textContent = `${snapshot.humanConfidence}%`;
       };
 
+      const setCopyLabel = (label) => {
+        copySnippet.textContent = label;
+      };
+
+      const resetCopyLabel = () => {
+        window.clearTimeout(copyResetTimer);
+        copyResetTimer = window.setTimeout(() => setCopyLabel("copy"), 1200);
+      };
+
+      const fallbackCopyText = (text) => {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.top = "-9999px";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        const copied = document.execCommand("copy");
+        document.body.removeChild(textarea);
+        return copied;
+      };
+
+      const copyInstallSnippet = async () => {
+        const text = "<turing-test achievements></turing-test>";
+
+        try {
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(text);
+          } else if (!fallbackCopyText(text)) {
+            throw new Error("Copy failed");
+          }
+          setCopyLabel("copied");
+          resetCopyLabel();
+        } catch {
+          setCopyLabel("copy failed");
+          resetCopyLabel();
+        }
+      };
+
       overlay.addEventListener("turing-test:update", (event) => {
         applySnapshot(event.detail);
       });
+
+      copySnippet.addEventListener("click", copyInstallSnippet);
 
       if (overlay.snapshot) {
         applySnapshot(overlay.snapshot);

@@ -18,7 +18,9 @@ npm i turing-test-near-you
 ## Use In A Site
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/npm/turing-test-near-you@latest/dist/turing-test.js"></script><turing-test achievements></turing-test>
+<script type="module"
+  src="https://cdn.jsdelivr.net/npm/turing-test-near-you@latest/dist/turing-test.js"></script>
+<turing-test achievements></turing-test>
 ```
 
 Default palette comes from the original site implementation:
