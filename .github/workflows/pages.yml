@@ -33,7 +33,7 @@ jobs:
 
       - run: npm run build
 
-      - run: mkdir site && cp index.html styles.css site/ && cp -R dist site/dist && touch site/.nojekyll
+      - run: mkdir site && cp index.html styles.css preview-card.png site/ && cp -R dist site/dist && touch site/.nojekyll
 
       - uses: actions/configure-pages@v5
 
